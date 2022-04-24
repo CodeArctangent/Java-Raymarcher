@@ -38,8 +38,10 @@ public class Display extends Canvas implements Runnable {
 	
 	public synchronized void start() {
 		rendering = true;
-		this.thread = new Thread(this, "Display");
-		this.thread.start();
+		for (int t = 0; t < 4; t++) {
+			this.thread = new Thread(this, "Display");
+			this.thread.start();
+		}
 	}
 	
 	public synchronized void stop() {
@@ -70,7 +72,7 @@ public class Display extends Canvas implements Runnable {
 			fps++;
 			if (System.currentTimeMillis() - timer > 1000) {
 				timer += 1000;
-				this.frame.setTitle(title + " | " + fps + " fps");;
+				this.frame.setTitle(title + " - Running on CPU - " + fps + " fps");
 				fps = 0;
 			}
 		}
