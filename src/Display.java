@@ -20,8 +20,29 @@ public class Display extends Canvas implements Runnable {
 		this.setPreferredSize(size);
 	}
 	
-	@Override
-	public void run() {
-		
+	public static void main(String[] args) {
+		Display display = new Display();
+		display.frame.setTitle(title);
+		display.frame.add(display);
+		display.frame.pack();
+		display.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		display.frame.setResizable(false);
+		display.frame.setVisible(true);
+		display.start();
+	}
+	
+	public synchronized void start() {
+		rendering = true;
+		this.thread = new Thread(this, "Display");
+		this.thread.start();
+	}
+	
+	public synchronized void stop() {
+		rendering = false;
+		try {
+			this.thread.join();
+		} catch(InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }
