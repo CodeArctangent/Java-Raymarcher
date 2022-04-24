@@ -38,10 +38,8 @@ public class Display extends Canvas implements Runnable {
 	
 	public synchronized void start() {
 		rendering = true;
-		for (int t = 0; t < 4; t++) {
-			this.thread = new Thread(this, "Display");
-			this.thread.start();
-		}
+		this.thread = new Thread(this, "Display");
+		this.thread.start();
 	}
 	
 	public synchronized void stop() {
