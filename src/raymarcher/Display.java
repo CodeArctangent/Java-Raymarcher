@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.JFrame;
 
@@ -17,6 +19,7 @@ public class Display extends Canvas implements Runnable {
 	public static final int HEIGHT = 512;
 	private static final int SCALE = 3;
 	private static boolean rendering = false;
+	private static ExecutorService executorService;
 	
 	public Display() {
 		this.frame = new JFrame();
@@ -38,12 +41,14 @@ public class Display extends Canvas implements Runnable {
 	
 	public synchronized void start() {
 		rendering = true;
-		this.thread = new Thread(this, "Display");
-		this.thread.start();
+		executorService = Executors.newFixedThreadPool(4);
+		run();
 	}
 	
 	public synchronized void stop() {
 		rendering = false;
+		this.thread = new Thread(this, "Display");
+		this.thread.start();
 		try {
 			this.thread.join();
 		} catch(InterruptedException e) {
@@ -85,8 +90,8 @@ public class Display extends Canvas implements Runnable {
 		Graphics gd = bs.getDrawGraphics();
 		gd.setColor(Color.BLACK);
 		gd.fillRect(0,  0, WIDTH, HEIGHT);
-		for (double x = 0; x < WIDTH; x++) {
-			for (double y = 0; y < HEIGHT; y++) {
+		for (double y = 0; y < HEIGHT; y++) {
+			for (double x = 0; x < WIDTH; x++) {
 				Color pos = new Color((int)(x/WIDTH*255), (int)(y/HEIGHT*255), 0);
 				gd.setColor(pos);
 				gd.fillRect((int)x, (int)y, 1, 1);
