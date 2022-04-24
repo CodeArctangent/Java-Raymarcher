@@ -13,8 +13,9 @@ public class Display extends Canvas implements Runnable {
 	private Thread thread;
 	private JFrame frame;
 	private static String title = "Open Marcher";
-	private static final int WIDTH = 768;
-	private static final int HEIGHT = 512;
+	public static final int WIDTH = 768;
+	public static final int HEIGHT = 512;
+	private static final int SCALE = 3;
 	private static boolean rendering = false;
 	
 	public Display() {
@@ -57,7 +58,6 @@ public class Display extends Canvas implements Runnable {
 		final double ns = 1000000000.0 / 60;
 		double deltaTime = 0;
 		int fps = 0;
-		
 		while(rendering) {
 			long now = System.nanoTime();
 			deltaTime += (now - lastTime) / ns;
@@ -85,6 +85,13 @@ public class Display extends Canvas implements Runnable {
 		Graphics gd = bs.getDrawGraphics();
 		gd.setColor(Color.BLACK);
 		gd.fillRect(0,  0, WIDTH, HEIGHT);
+		for (double x = 0; x < WIDTH; x++) {
+			for (double y = 0; y < HEIGHT; y++) {
+				Color pos = new Color((int)(x/WIDTH*255), (int)(y/HEIGHT*255), 0);
+				gd.setColor(pos);
+				gd.fillRect((int)x, (int)y, 1, 1);
+			}
+		}
 		gd.dispose();
 		bs.show();
 	}
