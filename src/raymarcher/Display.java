@@ -1,6 +1,9 @@
 package raymarcher;
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.image.BufferStrategy;
 
 import javax.swing.JFrame;
 
@@ -74,7 +77,16 @@ public class Display extends Canvas implements Runnable {
 	}
 	
 	private void draw() {
-		
+		BufferStrategy bs = this.getBufferStrategy();
+		if (bs == null) {
+			this.createBufferStrategy(3);
+			return;
+		}
+		Graphics gd = bs.getDrawGraphics();
+		gd.setColor(Color.BLACK);
+		gd.fillRect(0,  0, WIDTH, HEIGHT);
+		gd.dispose();
+		bs.show();
 	}
 	
 	private void update() {
