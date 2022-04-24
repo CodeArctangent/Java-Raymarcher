@@ -9,17 +9,20 @@ import java.util.concurrent.Executors;
 
 import javax.swing.JFrame;
 
+import raymarcher.scene.SDF;
+import raymarcher.space.Vector;
+
 public class Display extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
 	
 	private Thread thread;
 	private JFrame frame;
 	private static String title = "Open Marcher";
-	public static final int WIDTH = 768;
-	public static final int HEIGHT = 512;
-	private static final int SCALE = 3;
+	public static final int WIDTH = 750;
+	public static final int HEIGHT = 500;
+	public static final int SCALE = 20;
+	public static final int STEPS = 50;
 	private static boolean rendering = false;
-	private static ExecutorService executorService;
 	
 	public Display() {
 		this.frame = new JFrame();
@@ -28,9 +31,14 @@ public class Display extends Canvas implements Runnable {
 		this.setPreferredSize(size);
 	}
 	
+	public static double scene(Vector position) {
+		double sphere = SDF.sphere(position, 4);
+		return sphere;
+	}
+	
 	public static void main(String[] args) {
 		Display display = new Display();
-		display.frame.setTitle(title);
+		display.frame.setTitle(title + " - Running on CPU - 0 fps");
 		display.frame.add(display);
 		display.frame.pack();
 		display.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,14 +49,12 @@ public class Display extends Canvas implements Runnable {
 	
 	public synchronized void start() {
 		rendering = true;
-		executorService = Executors.newFixedThreadPool(4);
-		run();
+		this.thread = new Thread(this, "Display");
+		this.thread.start();
 	}
 	
 	public synchronized void stop() {
 		rendering = false;
-		this.thread = new Thread(this, "Display");
-		this.thread.start();
 		try {
 			this.thread.join();
 		} catch(InterruptedException e) {
@@ -90,11 +96,11 @@ public class Display extends Canvas implements Runnable {
 		Graphics gd = bs.getDrawGraphics();
 		gd.setColor(Color.BLACK);
 		gd.fillRect(0,  0, WIDTH, HEIGHT);
-		for (double y = 0; y < HEIGHT; y++) {
-			for (double x = 0; x < WIDTH; x++) {
-				Color pos = new Color((int)(x/WIDTH*255), (int)(y/HEIGHT*255), 0);
+		for (double y = 0; y < HEIGHT / SCALE; y++) {
+			for (double x = 0; x < WIDTH / SCALE; x++) {
+				Color pos = new Color((int) (x / WIDTH * SCALE * 255), (int) (y / HEIGHT * SCALE * 255), 0);
 				gd.setColor(pos);
-				gd.fillRect((int)x, (int)y, 1, 1);
+				gd.fillRect((int)x*SCALE, (int) y * SCALE * -1 + HEIGHT - SCALE, SCALE, SCALE);
 			}
 		}
 		gd.dispose();
