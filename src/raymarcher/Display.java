@@ -49,9 +49,27 @@ public class Display extends Canvas implements Runnable {
 
 	@Override
 	public void run() {
+		long lastTime = System.nanoTime();
+		long timer = System.currentTimeMillis();
+		final double ns = 1000000000.0 / 60;
+		double deltaTime = 0;
+		int fps = 0;
+		
 		while(rendering) {
+			long now = System.nanoTime();
+			deltaTime += (now - lastTime) / ns;
+			lastTime = now;
+			while (deltaTime >= 1) {
+				update();
+				deltaTime--;
+			}
 			draw();
-			update();
+			fps++;
+			if (System.currentTimeMillis() - timer > 1000) {
+				timer += 1000;
+				this.frame.setTitle(title + " | " + fps + " fps");;
+				fps = 0;
+			}
 		}
 	}
 	
