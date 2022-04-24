@@ -1,3 +1,4 @@
+package raymarcher;
 import java.awt.Canvas;
 import java.awt.Dimension;
 
@@ -44,5 +45,21 @@ public class Display extends Canvas implements Runnable {
 		} catch(InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void run() {
+		while(rendering) {
+			draw();
+			update();
+		}
+	}
+	
+	private void draw() {
+		
+	}
+	
+	private void update() {
+		
 	}
 }
