@@ -31,6 +31,7 @@ public class Render {
 	        Display.scene(new Vector(pos.x, pos.y, pos.z + EPSILON)) 
 	        	- Display.scene(new Vector(pos.x, pos.y, pos.z - EPSILON))
 	    );
+	    return out.normalized();
 	}
 	
 	public static Vector rayDirection(double fov, Vector size, Vector fragCoord) {
@@ -47,9 +48,13 @@ public class Render {
 	public static Color renderScene(Vector size, double x, double y, double min, double max, double time) {
 		Vector pos = new Vector(x-Math.sin(time)*100, y-Math.cos(time)*100);
 		Vector dir = rayDirection(35, size, pos);
-		Vector eye = new Vector(1, -1, 0);
+		Vector eye = new Vector(1, 1, 0);
+		Vector norm = estimateNormal(pos);
 		double dist = distanceToSurface(eye, dir, min, max);
-        Color col = new Color((int)Render.clamp(dist, 0, 255), 0, 0);
+        Color col = new Color((int) Render.clamp(dist, 0, 255), 0, 0);
+//		Color col = new Color((int)Render.clamp(norm.x, 0, 255), 
+//			(int)Render.clamp(norm.y, 0, 255),
+//			(int)Render.clamp(norm.z, 0, 255));
 //		if (dist > max - 0.000001) {
 //	        col = new Color(0, 0, 0);
 //	    }

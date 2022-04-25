@@ -31,6 +31,11 @@ public class Vector {
 		return out;
 	}
 	
+	public Vector normalized() {
+		Vector out = this.div(this.length());
+		return out;
+	}
+	
 	public double length() {
 		return Math.sqrt(x * x + y * y + z * z);
 	}
