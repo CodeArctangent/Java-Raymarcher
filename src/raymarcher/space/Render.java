@@ -5,11 +5,13 @@ import java.awt.Color;
 import raymarcher.Display;
 
 public class Render {
+	public static final double EPSILON = Math.ulp(1);
+	
 	public static double distanceToSurface(Vector eye, Vector dirction, double start, double end) {
 		double depth = start;
 	    for (int i = 0; i < Display.STEPS; i++) {
 	    	double dist = Display.scene(eye.add(depth).mul(dirction));
-	        if (dist < 0.000001) {
+	        if (dist < EPSILON) {
 				return depth;
 	        }
 	        depth += dist;
@@ -18,6 +20,17 @@ public class Render {
 	        }
 	    }
 	    return end;
+	}
+	
+	public static Vector estimateNormal(Vector pos) {
+	    Vector out = new Vector(
+	        Display.scene(new Vector(pos.x + EPSILON, pos.y, pos.z)) 
+	        	- Display.scene(new Vector(pos.x - EPSILON, pos.y, pos.z)),
+	        Display.scene(new Vector(pos.x, pos.y + EPSILON, pos.z)) 
+	        	- Display.scene(new Vector(pos.x, pos.y - EPSILON, pos.z)),
+	        Display.scene(new Vector(pos.x, pos.y, pos.z + EPSILON)) 
+	        	- Display.scene(new Vector(pos.x, pos.y, pos.z - EPSILON))
+	    );
 	}
 	
 	public static Vector rayDirection(double fov, Vector size, Vector fragCoord) {
