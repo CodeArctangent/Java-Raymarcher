@@ -4,12 +4,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.swing.JFrame;
 
 import raymarcher.scene.SDF;
+import raymarcher.space.Render;
 import raymarcher.space.Vector;
 
 public class Display extends Canvas implements Runnable {
@@ -22,6 +21,7 @@ public class Display extends Canvas implements Runnable {
 	public static final int HEIGHT = 500;
 	public static final int SCALE = 20;
 	public static final int STEPS = 50;
+	public static final Vector SIZE = new Vector(WIDTH, HEIGHT);
 	private static boolean rendering = false;
 	
 	public Display() {
@@ -32,7 +32,7 @@ public class Display extends Canvas implements Runnable {
 	}
 	
 	public static double scene(Vector position) {
-		double sphere = SDF.sphere(position, 4);
+		double sphere = SDF.sphere(position, 1);
 		return sphere;
 	}
 	
@@ -98,8 +98,9 @@ public class Display extends Canvas implements Runnable {
 		gd.fillRect(0,  0, WIDTH, HEIGHT);
 		for (double y = 0; y < HEIGHT / SCALE; y++) {
 			for (double x = 0; x < WIDTH / SCALE; x++) {
-				Color pos = new Color((int) (x / WIDTH * SCALE * 255), (int) (y / HEIGHT * SCALE * 255), 0);
-				gd.setColor(pos);
+//				Color pos = new Color((int) (x / WIDTH * SCALE * 255), (int) (y / HEIGHT * SCALE * 255), 0);
+				Color rc = Render.renderScene(SIZE, x * SCALE, y * SCALE, 0, 1000);
+				gd.setColor(rc);
 				gd.fillRect((int)x*SCALE, (int) y * SCALE * -1 + HEIGHT - SCALE, SCALE, SCALE);
 			}
 		}
