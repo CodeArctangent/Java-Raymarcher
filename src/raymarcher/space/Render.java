@@ -31,15 +31,15 @@ public class Render {
 	    return Math.max(min, Math.min(max, val));
 	}
 	
-	public static Color renderScene(Vector size, double x, double y, double min, double max) {
-		Vector pos = new Vector(x, y);
-		Vector dir = rayDirection(45, size, pos);
-		Vector eye = new Vector(0, 0, 5);
+	public static Color renderScene(Vector size, double x, double y, double min, double max, double time) {
+		Vector pos = new Vector(x-Math.sin(time)*100, y-Math.cos(time)*100);
+		Vector dir = rayDirection(35, size, pos);
+		Vector eye = new Vector(1, -1, 0);
 		double dist = distanceToSurface(eye, dir, min, max);
-        Color col = new Color(255, 0, 0);
-		if (dist > max - 0.000001) {
-	        col = new Color(0, 0, 0);
-	    }
+        Color col = new Color((int)Render.clamp(dist, 0, 255), 0, 0);
+//		if (dist > max - 0.000001) {
+//	        col = new Color(0, 0, 0);
+//	    }
 		return col;
 	}
 

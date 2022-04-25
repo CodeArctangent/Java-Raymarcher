@@ -17,28 +17,28 @@ public class Display extends Canvas implements Runnable {
 	private Thread thread;
 	private JFrame frame;
 	private static String title = "Open Marcher";
-	public static final int WIDTH = 750;
-	public static final int HEIGHT = 500;
-	public static final int SCALE = 20;
+	public static final int WIDTH = 768;
+	public static final int HEIGHT = 512;
+	public static final int SCALE = 2;
 	public static final int STEPS = 50;
 	public static final Vector SIZE = new Vector(WIDTH, HEIGHT);
+	public static final Vector DELTA = SIZE.div(2);
 	private static boolean rendering = false;
 	
 	public Display() {
 		this.frame = new JFrame();
-		
 		Dimension size = new Dimension(WIDTH, HEIGHT);
 		this.setPreferredSize(size);
 	}
 	
 	public static double scene(Vector position) {
-		double sphere = SDF.sphere(position, 1);
+		double sphere = SDF.sphere(position, 100);
 		return sphere;
 	}
 	
 	public static void main(String[] args) {
 		Display display = new Display();
-		display.frame.setTitle(title + " - Running on CPU - 0 fps");
+		display.frame.setTitle(title + " - Res: " + WIDTH/SCALE + "x" + HEIGHT/SCALE + " - Running on CPU - 0 fps");
 		display.frame.add(display);
 		display.frame.pack();
 		display.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -69,6 +69,7 @@ public class Display extends Canvas implements Runnable {
 		final double ns = 1000000000.0 / 60;
 		double deltaTime = 0;
 		int fps = 0;
+		double time = 0;
 		while(rendering) {
 			long now = System.nanoTime();
 			deltaTime += (now - lastTime) / ns;
@@ -77,17 +78,18 @@ public class Display extends Canvas implements Runnable {
 				update();
 				deltaTime--;
 			}
-			draw();
+			time += 0.05;
+			draw(time);
 			fps++;
 			if (System.currentTimeMillis() - timer > 1000) {
 				timer += 1000;
-				this.frame.setTitle(title + " - Running on CPU - " + fps + " fps");
+				this.frame.setTitle(title + " - Res: " + WIDTH/SCALE + "x" + HEIGHT/SCALE + " - Running on CPU - " + fps + " fps");
 				fps = 0;
 			}
 		}
 	}
 	
-	private void draw() {
+	private void draw(double dt) {
 		BufferStrategy bs = this.getBufferStrategy();
 		if (bs == null) {
 			this.createBufferStrategy(3);
@@ -96,12 +98,16 @@ public class Display extends Canvas implements Runnable {
 		Graphics gd = bs.getDrawGraphics();
 		gd.setColor(Color.BLACK);
 		gd.fillRect(0,  0, WIDTH, HEIGHT);
-		for (double y = 0; y < HEIGHT / SCALE; y++) {
-			for (double x = 0; x < WIDTH / SCALE; x++) {
-//				Color pos = new Color((int) (x / WIDTH * SCALE * 255), (int) (y / HEIGHT * SCALE * 255), 0);
-				Color rc = Render.renderScene(SIZE, x * SCALE, y * SCALE, 0, 1000);
+		for (double y = -DELTA.y; y < DELTA.y / SCALE; y++) {
+			for (double x = -DELTA.x; x < DELTA.x / SCALE; x++) {
+//				Color rc = new Color((int) Render.clamp(x / DELTA.x * SCALE * 255, 0, 255), 
+//					(int) Render.clamp(y / DELTA.y * SCALE * 255, 0, 255), 0);
+				Color rc = Render.renderScene(SIZE, x * SCALE + DELTA.x, y * SCALE + DELTA.y, 0, 1000, dt);
+//				double dist = SDF.sphere(new Vector(x, y), 100);
+//				Color rc = new Color((int)Render.clamp(dist * 255, 0, 255), (int)Render.clamp(dist * 255, 0, 255), 0);
 				gd.setColor(rc);
-				gd.fillRect((int)x*SCALE, (int) y * SCALE * -1 + HEIGHT - SCALE, SCALE, SCALE);
+				gd.fillRect((int) (x * SCALE + DELTA.x), 
+					(int) (-(y * SCALE + DELTA.y) + HEIGHT - SCALE), SCALE, SCALE);
 			}
 		}
 		gd.dispose();
